@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Google Guava</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <!--<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">-->
+  <!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+  <!--This one seems to work all the time, but really small on ipad-->
+  <!--<meta name="viewport" content="initial-scale=0.4">-->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="stylesheet" media="all" href="theme/css/default.css">
+  <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="theme/css/phone.css">
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->
+  <script data-main="js/slides" src="js/require-1.0.8.min.js"></script>
+</head>
+<body style="opacity: 0">
+
+<slides class="layout-widescreen">
+
+  <slide class="logoslide nobackground">
+    <article class="flexbox vcenter">
+      <span><img src="images/smarchive_logo.png"></span>
+    </article>
+  </slide>
+
+  <slide class="title-slide segue nobackground">
+    <aside class="gdbar"><img src="images/smarchive_icon_128.png"></aside>
+    <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+    <hgroup class="auto-fadein">
+      <h1 data-config-title><!-- populated from slide_config.json --></h1>
+      <h2 data-config-subtitle><!-- populated from slide_config.json --></h2>
+      <p data-config-presenter><!-- populated from slide_config.json --></p>
+    </hgroup>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>What's Google Guava?</h2>
+    </hgroup>
+    <article>
+      <ul>
+        <li>Extensive suite of common libraries that have been found the most useful in Google's many Java projects.</li>
+        <li>These utilities relate to: collections, concurrency, primitives, reflection, comparison, I/O, hashing, networking, strings, math, in-memory caching, in-memory publish/subscribe&hellip; and various basic data types.</li>
+        <li>Lives near the bottom of the stack, right on top of the JDK itself.</li>
+        <li>Release every 3 months, with significant new functionality and fixes.</li>
+        <li><a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, version 2.0</a></li>
+      </ul>
+    </article>
+  </slide>
+  <slide>
+    <hgroup>
+      <h2>Guava Packages</h2>
+    </hgroup>
+    <article>
+      <ul>
+        <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/base/package-summary.html">com.google.common.base</a></li>
+        <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/cache/package-summary.html">com.google.common.cache</a></li>
+        <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/package-summary.html">com.google.common.collect</a></li>
+        <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/eventbus/package-summary.html">com.google.common.eventbus</a></li>
+        <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/hash/package-summary.html">com.google.common.hash</a></li>
+        <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/io/package-summary.html">com.google.common.io</a></li>
+        <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/math/package-summary.html">com.google.common.math</a></li>
+        <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/net/package-summary.html">com.google.common.net</a></li>
+        <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/primitives/package-summary.html">com.google.common.primitives</a></li>
+        <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/reflect/package-summary.html">com.google.common.reflect</a></li>
+        <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/util/concurrent/package-summary.html">com.google.common.util.concurrent</a></li>
+        <li>(<a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/annotations/package-summary.html">com.google.common.annotations</a>)</li>
+      </ul>
+    </article>
+  </slide>
+
+  <slide class="segue dark nobackground">
+    <aside class="gdbar"><img src="images/smarchive_icon_128.png"></aside>
+    <hgroup class="auto-fadein">
+      <h2>Base</h2>
+    </hgroup>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Base</h2>
+      <h3>Preconditions</h3>
+    </hgroup>
+    <article class="smaller">
+      <pre class="prettyprint" data-lang="java">
+public Car(Engine engine) {
+  if(engine == null) {
+    throw new NullPointerException();
+  }
+
+  this.engine = engine;
+}
+
+public void drive(double speed) {
+  if(speed &lt;= 0.0) {
+    new IllegalArgumentException("speed (" + speed + ") must be positive");
+  }
+
+  if(!engine.isRunning()) {
+    throw new IllegalStateException("engine must be running");
+  }
+  // ...
+}
+</pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Base</h2>
+      <h3>Preconditions</h3>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="java">
+public Car(Engine engine) {
+  // NullPointerException
+  <b>this.engine = checkNotNull(engine);</b>
+}
+
+public void drive(double speed) {
+  // IllegalArgumentException
+  <b>checkArgument(speed &gt; 0.0, "speed (%s) must be positive", speed);</b>
+  // IllegalStateException
+  <b>checkState(engine.isRunning(), "engine must be running");</b>
+  // ...
+}
+</pre>
+      <p>See the documentation on <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/base/Preconditions.html">com.google.common.base.Preconditions</a>.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Base</h2>
+      <h3>Optional</h3>
+    </hgroup>
+    <article>
+      <p>An immutable wrapper that is either present (contains a non-null reference) or absent (contains nothing) but it never "contains null".</p>
+      <p>Similar to Scala's <a href="http://www.scala-lang.org/api/current/scala/Option.html">Option</a> type.</a>
+        <p>Possible uses:
+          <ul>
+          <li>return type (vs. null): "a T that must be present" vs. "a T that might be absent"</li>
+          <li>distinguish between
+            <ul>
+              <li>"unknown" (for example, not present in a map)</li>
+              <li>"known to have no value" (present in the map, with value <code>Optional.absent()</code>)</li>
+            </ul>
+          </li>
+          <li>wrap nullable references for storage in a collection that does not support null</li>
+        </ul>
+      </p>
+      <p>See the documentation on <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/base/Optional.html">com.google.common.base.Optional</a>.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Base</h2>
+      <h3>Optional</h3>
+    </hgroup>
+    <article>
+      <p>Creating an <code>Optional&lt;T&gt;</code></p>
+      <pre class="prettyprint" data-lang="java">
+Optional.of(notNull);
+Optional.absent();
+Optional.fromNullable(maybeNull);
+</pre>
+      <p>Unwrapping an <code>Optional&lt;T&gt;</code></p>
+      <pre class="prettyprint" data-lang="java">
+mediaType.charset().get(); // throws IllegalStateException if absent
+mediaType.charset().or(Charsets.UTF_8);
+mediaType.charset().orNull();
+</pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Base</h2>
+      <h3>Charsets</h3>
+    </hgroup>
+    <article>
+      <p>There are <a href="http://docs.oracle.com/javase/7/docs/api/java/nio/charset/Charset.html#standard">six standard charsets</a> guaranteed to be implemented in every JVM.</p>
+      <p>But still there's lots of code like:
+        <pre class="prettyprint" data-lang="java">
+try {
+  bytes = string.getBytes("UTF-8");
+} catch (UnsupportedEncodingException e) {
+  throw new AssertionError(e); // how can this possibly happen?
+}
+</pre>
+      </p>
+      <p>Do this instead: <pre class="prettyprint" data-lang="java">bytes = string.getBytes(Charsets.UTF_8);</pre></p>
+      <p>See the documentation on <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/base/Charsets.html">com.google.common.base.Charsets</a>.</p>
+    </article>
+  </slide>
+  
+  <slide>
+    <hgroup>
+      <h2>Base</h2>
+      <h3>CaseFormat</h3>
+    </hgroup>
+    <article>
+      <p>A handy little class for converting between ASCII case conventions</p>
+      <p>Supported formats include:
+        <ul>
+          <li><code>LOWER_CAMEL</code>: lowerCamel</li>
+          <li><code>LOWER_HYPHEN</code>: lower-hyphen</li>
+          <li><code>LOWER_UNDERSCORE</code>: lower_underscore</li>
+          <li><code>UPPER_CAMEL</code>: UpperCamel</li>
+          <li><code>UPPER_UNDERSCORE</code>: UPPER_UNDERSCORE</li>
+        </ul>
+      </p>
+      <pre class="prettyprint" data-lang="java">
+CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, "CONSTANT_NAME"));
+// -&gt; "constantName"</pre>
+      <p>See the documentation on <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/base/CaseFormat.html">com.google.common.base.CaseFormat</a>.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Base</h2>
+      <h3>CharMatcher</h3>
+    </hgroup>
+    <article class="smaller">
+      <p>What's a matching character?</p>
+      <ul>
+        <li><code>WHITESPACE</code>, <code>ASCII</code>, <code>ANY</code> (many pre-defined sets)</li>
+        <li><code>is('x')</code>, <code>isNot('_')</code></li>
+        <li><code>oneOf("aeiou")</code></li>
+        <li><code>inRange('a', 'z')</code></li>
+        <li>Or subclass <code>CharMatcher</code>, implement <code>matches(char)</code></li>
+      </ul>
+      <p>What to do with those matching characters?</p>
+      <ul>
+        <li><code>matchesAllOf</code>, <code>matchesAnyOf</code>, <code>matchesNoneOf</code></li>
+        <li><code>indexIn</code>, <code>lastIndexIn</code>, <code>countIn</code></li>
+        <li><code>removeFrom</code>, <code>retainFrom</code></li>
+        <li><code>trimFrom</code>, <code>trimLeadingFrom</code>, <code>trimTrailingFrom</code></li>
+        <li><code>collapseFrom</code>, <code>trimAndCollapseFrom</code>, <code>replaceFrom</code></li>
+      </ul>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Base</h2>
+      <h3>CharMatcher</h3>
+    </hgroup>
+    <article>
+      <p>Scrubbing a user ID from user input:</p>
+      <pre class="prettyprint" data-lang="java">
+private static final CharMatcher ID_MATCHER = CharMatcher.DIGIT.or(CharMatcher.is('-'));
+// ...
+ID_MATCHER.retainFrom("54-74-90not_a_digit-2014");
+// -&gt; "54-74-90-2014"
+</pre>
+      <p>Replace all digits with asterisks:</p>
+      <pre class="prettyprint" data-lang="java">
+CharMatcher.JAVA_DIGIT.replaceFrom("54-74-90not_a_digit-2014", "*");
+// -&gt; "**-**-**not_a_digit-****"
+</pre>
+      <p>See the documentation on <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/base/CharMatcher.html">com.google.common.base.CharMatcher</a>.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Base</h2>
+      <h3>Joiner</h3>
+    </hgroup>
+    <article class="smaller">
+      <p><code>Joiner</code> concatenates strings using a delimiter
+        <ul>
+          <li>throws a NPE on null objects, unless:
+            <ul>
+              <li><code>.skipNulls()</code></li>
+              <li><code>.useForNull(String)</code></li>
+            </ul>
+            <pre class="prettyprint" data-lang="java">
+private static final Joiner JOINER = Joiner.on(", ").skipNulls();
+JOINER.join(null, "Kurt", "Kevin", null, "Chris");
+// -&gt; "Kurt, Kevin, Chris"
+</pre>
+          </li>
+          <li>also handles maps
+            <pre class="prettyprint" data-lang="java">
+static final MapJoiner MAP_JOINER = Joiner.on("; ")
+  .useForNull("NODATA")
+  .withKeyValueSeparator(":");
+// Map { "foo": "bar", "quux": null } -&gt; "foo: bar; quux: NODATA"
+</pre>
+          </li>
+        </ul>
+      </p>
+      <p>See the documentation on <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/base/Joiner.html">com.google.common.base.Joiner</a> and <a href="http://code.google.com/p/guava-libraries/wiki/StringsExplained#Joiner">Guava's string utilities, explained</a>.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Base</h2>
+      <h3>String splitting quiz</h3>
+    </hgroup>
+    <article>
+      <p>What's the result of the following call?</p>
+      <pre class="prettyprint" data-lang="java">" foo, ,bar, quux,".split(",");</pre>
+      <ol>
+        <li><code>[" foo", " ", "bar", " quux"]</code></li>
+        <li><code>["foo", "bar", "quux"]</code></li>
+        <li><code>["foo", null, "bar", "quux"]</code></li>
+        <li><code>[" foo", " ", "bar", " quux", ""]</code></li>
+        <li><code>[" foo", " ", "bar", " quux", null]</code></li>
+      </ol>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Base</h2>
+      <h3>Splitter</h3>
+    </hgroup>
+    <article>
+      <p>We probably want <code>["foo", "bar", "quux"]</code>. How do we get it?</p>
+      <pre class="prettyprint" data-lang="java">
+Splitter.on(',')
+  .trimResults()
+  .omitEmptyStrings()
+  .split(" foo, ,bar, quux,");
+// -&gt; ["foo", "bar", "quux"]
+</pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Base</h2>
+      <h3>Splitter</h3>
+    </hgroup>
+    <article>
+      <p><code>Splitter</code> divides strings into substrings with a delimiter
+        <ul>
+          <li>A better, more intuitive <code>String.split()</code>
+            <ul>
+              <li>doesn't silently discard trailing separators</li>
+              <li>handles empty pieces predictably</li>
+            </ul>
+          </li>
+          <li>By default, assumes nothing about whitespace
+            <ul>
+              <li><code>.trimResults()</code></li>
+              <li><code>.omitEmptyStrings()</code></li>
+            </ul>
+          </li>
+        </ul>
+      </p>
+      <p>See the documentation on <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/base/Splitter.html">com.google.common.base.Splitter</a> and <a href="http://code.google.com/p/guava-libraries/wiki/StringsExplained#Splitter">Guava's string utilities, explained</a>.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Base</h2>
+      <h3>Stopwatch</h3>
+    </hgroup>
+    <article>
+      <p>Prefer Stopwatch over <a href="http://docs.oracle.com/javase/7/docs/api/java/lang/System.html#nanoTime%28%29">System.nanoTime()</a>
+        <ul>
+          <li>exposes relative timings, not absolute time</li>
+          <li>alternate time sources can be substituted using <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/base/Ticker.html"><code>Ticker</code></a> (<code>read()</code> returns nanoseconds)</li>
+          <li><code>toString()</code> gives human readable format</li>
+        </ul>
+      </p>
+      <pre class="prettyprint" data-lang="java">
+Stopwatch stopwatch = new Stopwatch();
+<b>stopwatch.start();</b>
+doSomeOtherOperation();
+<b>long nanos = stopwatch.elapsedTime(TimeUnit.NANOSECONDS);</b>
+</pre>
+      <p>See the documentation on <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/base/Stopwatch.html">com.google.common.base.Stopwatch</a>.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Base</h2>
+      <h3>Objects.toStringHelper()</h3>
+    </hgroup>
+    <article>
+      <p>Makes implementing <a href="http://docs.oracle.com/javase/7/docs/api/java/lang/Object.html#toString%28%29"><code>Object.toString()</code></a> cleaner:</p>
+      <pre class="prettyprint" data-lang="java">
+return Objects.toStringHelper(this)
+  .add("name", name)
+  .add("id", userId)
+  .add("pet", petName) // petName is @Nullable!
+  <b>.omitNullValues()</b>
+  .toString();
+  // -&gt; "Person{name=Kurt Kluever, id=42}"
+  // Or without .omitNullValues():
+  // "Person{name=Kurt Kluever, id=42, pet=null}"
+</pre>
+      <p>See the documentation on <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/base/Objects.ToStringHelper.html">com.google.common.base.Objects.toStringHelper()</a>.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Base</h2>
+      <h3>Objects</h3>
+    </hgroup>
+    <article>
+      <p>Other useful methods provided by <code>Objects</code></p>
+      <ul>
+        <li><code>Objects.firstNonNull(a, b)</code>: return the first non-null object or throw NPE</li>
+        <li><code>Objects.equal(a, b)</code>: determines whether two possibly-null objects are equal</li>
+        <li><code>Objects.hashCode(objects...</code>: generates a hash code for multiple values</li>
+      </ul>
+      <p>The <code>Objects</code> class in JDK 7 or higher provides the equivalent <a href="http://docs.oracle.com/javase/7/docs/api/java/util/Objects.html#equals(java.lang.Object, java.lang.Object)"><code>Objects.equals</code></a> and <a href="http://docs.oracle.com/javase/7/docs/api/java/util/Objects.html#hash%28java.lang.Object...%29"><code>Objects.hash(Object...)</code></a> methods.
+      <p>See the documentation on <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/base/Objects.html">com.google.common.base.Objects</a> and <a href="http://code.google.com/p/guava-libraries/wiki/CommonObjectUtilitiesExplained">Guava's utilities for implementing common object methods, explained</a></p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Base</h2>
+      <h3>Utility classes</h3>
+    </hgroup>
+    <article>
+      <p>Other useful classes in <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/base/package-summary.html">com.google.common.base</a> are:
+        <ul>
+          <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/base/Ascii.html">Ascii</a>: Static methods and constants pertaining to ASCII characters</li>
+          <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/base/Strings.html">Strings</a>: <code>nullToEmpty</code>, <code>isNullOrEmpty</code>, <code>common{Prefix, Suffix}</code></li>
+          <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/base/Enums.html">Enums</a>: <code>getIfPresent</code>, <code>valueOfFunction</code></li>
+          <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/base/Throwables.html">Throwables</a>: <code>getStackTraceAsString</code>, <code>getCausalChain</code>, <code>propagateIfInstanceOf</code></li>
+          <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/base/Suppliers.html">Suppliers</a>: <code>memoizeWithExpiration</code>, <code>ofInstance</code></li>
+          <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/base/Equivalence.html">Equivalence</a>: A strategy for determining whether two instances are considered equivalent</li>
+        </ul>
+      </p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Base</h2>
+      <h3>Function</h3>
+    </hgroup>
+    <article>
+      <p><code>Function&lt;F, T&gt;</code>
+        <ul>
+          <li>one way transformation of <code>F</code> into <code>T</code></li>
+          <li><code>T apply(F input)</code></li>
+          <li>most common use: transforming collections (view)</li>
+        </ul>
+      </p>
+      <p>See the documentation on <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/base/Function.html">com.google.common.base.Function</a> and <a href="http://code.google.com/p/guava-libraries/wiki/FunctionalExplained">Functional idioms in Guava, explained</a>.</p>
+      <p>The <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/base/Functions.html">com.google.common.base.Functions</a> class provides common functions and related utilites.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Base</h2>
+      <h3>Predicate</h3>
+    </hgroup>
+    <article>
+      <p><code>Predicate&lt;T&gt;</code>
+        <ul>
+          <li>determines <code>true</code> or <code>false</code> for a given <code>T</code></li>
+          <li><code>boolean apply(T input)</code></li>
+          <li>most common use: filtering collections (view)</li>
+        </ul>
+      </p>
+      <p>See the documentation on <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/base/Predicate.html">com.google.common.base.Predicate</a> and <a href="http://code.google.com/p/guava-libraries/wiki/FunctionalExplained">Functional idioms in Guava, explained</a>.</p>
+      <p>The <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/base/Predicates.html">com.google.common.base.Predicates</a> class provides common predicates and related utilites.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Base</h2>
+      <h3>Functional Example</h3>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="java">
+Predicate<Client> activeClients = new Predicate<Client>() {
+  public boolean apply(Client client) {
+    return client.activeInLastMonth();
+  }
+};
+
+// Returns an immutable list of the names of
+// the first 10 active clients in the database.
+FluentIterable.from(database.getClientList())
+  .filter(activeClients) // Predicate
+  .transform(Functions.toStringFunction()) // Function
+  .limit(10)
+  .toImmutableList();
+    </article>
+  </slide>
+
+  <slide class="segue dark nobackground">
+    <aside class="gdbar"><img src="images/smarchive_icon_128.png"></aside>
+    <hgroup class="auto-fadein">
+      <h2>Primitives</h2>
+    </hgroup>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Primitives</h2>
+    </hgroup>
+    <article>
+      <p>A package that helps you work with Java's <a href="">primitive types</a>.</p>
+      <p>If you need help doing a primitive task:</p>
+      <ol>
+        <li>Check the wrapper class (e. g. <a href="http://docs.oracle.com/javase/7/docs/api/java/lang/Integer.html">java.lang.Integer</a>)</li>
+        <li>Check <a href="http://docs.oracle.com/javase/7/docs/api/java/util/Arrays.html">java.util.Arrays</a></li>
+        <li>Check <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/primitives/package-summary.html">com.google.common.primitives</a></li>
+        <li>It might not exist! (Write it yourself)</li>
+      </ol>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Primitives</h2>
+    </hgroup>
+    <article>
+      <p><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/primitives/package-summary.html">com.google.common.primitives</a> contains utility classes for all primitives, like <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/primitives/Booleans.html">Booleans</a>, <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/primitives/Bytes.html">Bytes</a>, <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/primitives/Chars.html">Chars</a>, <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/primitives/Doubles.html">Doubles</a>, <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/primitives/Floats.html">Floats</a>, <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/primitives/Ints.html">Ints</a>, <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/primitives/Longs.html">Longs</a>, and <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/primitives/Shorts.html">Shorts</a>.</p>
+      <p>Each has the exact same structure (but has only the subset of operations that make sense for its type).</p>
+      <p>Depending on the primitive type, useful methods like: <code>{checked, saturated}Cast</code>, <code>contains</code>, <code>indexOf</code>, <code>min</code>, <code>max</code>, <code>join</code>, <code>fromByteArray</code></p>
+      <p>There are also alternate versions of some primitive types like <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/primitives/UnsignedLong.html">UnsignedLong</a> or <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/primitives/UnsignedInteger.html">UnsignedInteger</a> with corresponding utility classes.</a>
+      <p>Also see <a href="http://code.google.com/p/guava-libraries/wiki/PrimitivesExplained">Guava's primitives utilities, explained</a>.</p>
+    </article>
+  </slide>
+
+  <slide class="segue dark nobackground">
+    <aside class="gdbar"><img src="images/smarchive_icon_128.png"></aside>
+    <hgroup class="auto-fadein">
+      <h2>Collections</h2>
+    </hgroup>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Collections</h2>
+    </hgroup>
+    <article>
+      <p>What's inside of <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/package-summary.html">com.google.common.collect</a>?</p>
+      <ul>
+        <li>Immutable Collections</li>
+        <li>New collection types: <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/Multimap.html">Multimap</a>, <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/Multiset.html">Multiset</a>, <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/BiMap.html">BiMap</a>, <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/Table.html">Table</a>&hellip;</li>
+        <li>Forwarding collections, Constrained collections</li>
+        <li>Comparator-related utilities like <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/ComparisonChain.html">ComparisonChain</a></li>
+        <li>Stuff similar to <a href="http://commons.apache.org/collections/">Apache Commons Collections</a> (but with consequent support for Generics)</li>
+        <li>Some functional programming support (filter, transform, etc.)</li>
+      </ul>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Collections</h2>
+      <h3>Collections utilities</h3>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="java">
+List&lt;String&gt; arrayList = Lists.newArrayList();
+List&lt;String&gt; arrayListJava7 = new ArrayList&lt;&gt;; // JDK 7 or higher
+List&lt;String&gt; filledList = Lists.newArrayList("foo", "bar", "quux");
+
+Map&lt;String, String&gt; hashMap = Maps.newHashMap();
+Map&lt;String, String&gt; hashMapJava7 = new HashMap&lt;&gt;; // JDK 7 or higher
+
+// Up to 5 key/value pairs, immutable!
+Map&lt;String, String&gt; filledMap = ImmutableMap.of("foo", "fooVal", "bar", "barVal");
+// -&gt; ImmutableMap { "foo": "fooVal", "bar": "barVal" }
+</pre>
+      <p>There are many more useful methods in the utility classes <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/Collections2.html">Collections2</a>, <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/Lists.html">Lists</a>, <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/Maps.html">Maps</a>, <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/Sets.html">Sets</a>, <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/Iterables.html">Iterables</a>, <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/Iterators.html">Iterators</a>, <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/Queues.html">Queues</a>, and many others in <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/package-summary.html">com.google.collect</a>.</p>
+      <p>Also see <a href="http://code.google.com/p/guava-libraries/wiki/CollectionUtilitiesExplained">Guava's static collections utilities, explained</a>.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Collections</h2>
+      <h3>FluentIterable</h3>
+    </hgroup>
+    <article>
+      <p><code>FluentIterable</code> is a rich interface for manipulating <code>Iterable</code> instances in a chained fashion.</p>
+      <ul>
+        <li>Chaining (returns <code>FluentIterable</code>): <code>skip</code>, <code>limit</code>, <code>cycle</code>, <code>filter</code>, <code>transform</code></li>
+        <li>Querying (returns boolean): <code>allMatch</code>, <code>anyMatch</code>, <code>contains</code>, <code>isEmpty</code></li>
+        <li>Converting: <code>to{List, Set, SortedSet}</code>, <code>toArray</code></li>
+        <li>Extracting: <code>first</code>, <code>last</code>, <code>firstMatch</code> (returns <code>Optional&lt;E&gt;</code>), <code>get</code> (returns <code>E</code>)</li>
+      </ul>
+      <p>See the documentation on <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/FluentIterable.html">com.google.common.collect.FluentIterable</a>.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Collections</h2>
+      <h3>Functional Programming Hazards</h3>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="java">
+// with (ugly) functional programming
+Function&lt;String, Integer&gt; lengthFunction = new Function&lt;String, Integer&gt;() {
+  public Integer apply(String string) {
+    return string.length();
+  }
+};
+
+Predicate&lt;String&gt; allCaps = new Predicate&lt;String&gt;() {
+  public boolean apply(String string) {
+    return CharMatcher.JAVA_UPPER_CASE.matchesAllOf(string);
+  }
+};
+
+Multiset&lt;Integer&gt; lengths = HashMultiset.create(
+  Iterables.transform(Iterables.filter(strings, allCaps), lengthFunction)
+);
+</pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Collections</h2>
+      <h3>Functional Programming Hazards</h3>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="java">
+// without functional programming
+Multiset&lt;Integer&gt; lengths = HashMultiset.create();
+for (String string : strings) {
+  if (CharMatcher.JAVA_UPPER_CASE.matchesAllOf(string)) {
+    lengths.add(string.length());
+  }
+}
+</pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Collections</h2>
+      <h3>MapMaker</h3>
+    </hgroup>
+    <article>
+      <p><code>MapMaker</code> is one of the jewels of <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/package-summary.html">com.google.common.collect</a>.</p>
+      <p>A builder of <a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ConcurrentMap.html"><code>ConcurrentMap</code></a> instances having any combination of certain features.</p>
+      <pre class="prettyprint" data-lang="java">
+ConcurrentMap&lt;User, RecGraph&gt; recommendations =
+  new MapMaker()
+    .concurrencyLevel(4)
+    .weakKeys()
+    .expiration(10, TimeUnit.MINUTES)
+    .makeComputingMap(
+      new Function&lt;User, RecGraph&gt;() {
+        public RecGraph apply(User user) {
+          return createExpensiveGraph(user);
+        }
+    });
+</pre>
+      <p>See documentation on <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/MapMaker.html">com.google.common.collect.MapMaker</a>.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Collections</h2>
+      <h3>Immutable Collections</h3>
+    </hgroup>
+    <article>
+      <p>Why immutable?
+        <ul>
+          <li>offered for all collection types (including JDK ones)</li>
+          <li>safe for use by untrusted libraries</li>
+          <li>inherently thread-safe</li>
+          <li>more efficient, time &amp; space (<a href="https://code.google.com/p/memory-measurer/wiki/ElementCostInDataStructures">analysis</a>)</li>
+          <li>can be used as a constant</li>
+          <li>similar to <code>Collections.unmodifiableXXX</code>, but&hellip;
+            <ul>
+              <li>performs a copy (not a view / wrapper)
+              <li>more efficient compared to unmodifiable collections
+              <li>type conveys immutability
+            </ul>
+          </li>
+        </ul>
+      </p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Collections</h2>
+      <h3>Immutable Collections</h3>
+    </hgroup>
+    <article>
+      <p><code>Immutable*</code> can be created in several ways:
+        <ul>
+          <li><code>copyOf(T)</code>, e. g. <code>ImmutableSet.copyOf(set)</code></li>
+          <li><code>of(elements)</code>, e. g. <code>ImmutableMap.of("a", "b")</code></li>
+          <li>using a Builder</li>
+        </ul>
+        <pre class="prettyprint" data-lang="java">
+public static final ImmutableSet&lt;Color&gt; MY_COLORS =
+  ImmutableSet.&lt;Color&gt;builder()
+    .addAll(WEB_SAFE_COLORS)
+    .add(new Color(0, 191, 255))
+    .build();
+</pre>
+      </p>
+      <p>Also see <a href="http://code.google.com/p/guava-libraries/wiki/ImmutableCollectionsExplained">Guava's immutable collections utilities, explained</a>.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Collections</h2>
+      <h3>Multiset</h3>
+    </hgroup>
+    <article>
+      <ul>
+        <li>often called a bag</li>
+        <li>add multiple instances of a given element</li>
+        <li>counts how many occurrences exist</li>
+        <li>similar to a <code>Map&lt;E, Integer&gt;</code>, but...</li>
+        <ul>
+          <li>only positive counts</li>
+          <li><code>size()</code> returns total # of items, not # keys</li>
+          <li><code>count()</code> for a non-existent key is 0</li>
+          <li><code>iterator()</code> goes over each element in the Multiset</li>
+        </ul>
+        <li>similar to <a href=""><code>AtomicLongMap&lt;E&gt;</code></a>, which is like a <code>Map&lt;E, AtomicLong&gt;</code></li>
+      </ul>
+      <p>See documentation on <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/Multiset.html">com.google.common.collect.Multiset</a>.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Collections</h2>
+      <h3>Multimap</h3>
+    </hgroup>
+    <article>
+      <p>Like a <code>Map</code> (key-value pairs), but may have duplicate keys. The values related to a single key can be viewed as a collection (set or list)</p>
+      <p><code>Multimap&lt;K, V&gt;</code> is similar to a <code>Map&lt;K, Collection&lt;V&gt;&gt;</code>, but&hellip;
+        <ul>
+          <li><code>get()</code> never returns null (returns an empty collection)</li>
+          <li><code>containsKey()</code> is true only if 1 or more values exist</li>
+          <li><code>entries()</code> returns all entries for all keys</li>
+          <li><code>size()</code> returns total number of entries, not keys</li>
+          <li><code>asMap()</code> to view it as a <code>Map&lt;K, Collection&lt;V&gt;&gt;</code></li>
+        </ul>
+      </p>
+      <p>You typically want the variable type to be either <code>ListMultimap</code> or <code>SetMultimap</code> (and not <code>Multimap</code>)</p>
+      <p>See the documentation on <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/Multimap.html">com.google.common.collect.Multimap</a>.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Collections</h2>
+      <h3>BiMap</h3>
+    </hgroup>
+    <article>
+      <ul>
+        <li>bi-directional map</li>
+        <li>both keys and values are unique</li>
+        <li>can view the inverse map with <code>inverse()</code></li>
+        <li>Use instead of maintaining two separate maps: <code>Map&lt;K1, K2&gt;</code>, <code>Map&lt;K2, K1&gt;</code></li>
+      </ul>
+      <pre class="prettyprint" data-lang="java">
+BiMap&lt;String, Integer&gt; userMapping = ImmutableBiMap.of("user1", 23, "user2", 42);
+int userId = userMapping.get("user1"); // get user id of "user1"
+String userName = userMapping.inverse().get(42); // get user name of user 42
+</pre>
+      <p>See the documentation on <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/BiMap.html">com.google.common.collect.BiMap</a>.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Collections</h2>
+      <h3>Table</h3>
+    </hgroup>
+    <article>
+      <p>A "two-tier" map, or a map with two keys (called the "row key" and "column key").</p>
+      <ul>
+        <li>can be sparse or dense
+          <ul>
+            <li><code>HashBasedTable</code>: uses hash maps (sparse)</li>
+            <li><code>TreeBasedTable</code>: uses tree maps (sparse)</li>
+            <li><code>ArrayTable</code>: uses <code>V[][]</code> (dense)</li>
+          </ul>
+        </li>
+        <li>many views on the underlying data are possible
+          <ul>
+            <li>row or column map (of maps)
+            <li>row or column key set
+            <li>set of all cells (as <code>&lt;R, C, V&gt;</code> entries)
+          </ul>
+        </li>
+        <li>Use instead of <code>Map&lt;R, Map&lt;C, V&gt;&gt;</code></li>
+      </ul>
+      <p>See the documentation on <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/Table.html">com.google.common.collect.Table</a>.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Collections</h2>
+    </hgroup>
+    <article>
+      <p>Not in this talk due to time constraints (and left as exploration exercise to the attendants):</p>
+      <ul>
+        <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/Ordering.html"><code>Ordering</code></a></li>
+        <li>Predefined Orderings</li>
+        <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/ComparisonChain.html"><code>ComparisonChain</code></a></li>
+        <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/Constraints.html"><code>Constraints</code></a></li>
+        <li><code>{Empty, Singleton, Regular}*</code> collection classes</li>
+        <li><code>Forwarding*</code> collection classes</li>
+        <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/Range.html"><code>Range</code></a></li>
+        <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/Interner.html"><code>Interner</code></a></li>
+        <li><a href="http://dosc.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/package-summary.html">much, much more</a></li>
+      </ul>
+    </article>
+  </slide>
+
+  <slide class="segue dark nobackground">
+    <aside class="gdbar"><img src="images/smarchive_icon_128.png"></aside>
+    <hgroup class="auto-fadein">
+      <h2>Concurrent</h2>
+    </hgroup>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Concurrent</h2>
+    </hgroup>
+    <article>
+      <p>Spend the time to get deeply familiar with <a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/package-summary.html"><code>java.util.concurrent</code></a> first!</p>
+      <p>Then come check out: <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/util/concurrent/Callables.html"><code>Callables</code></a>, <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/util/concurrent/Futures.html"><code>Futures</code></a>, <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/util/concurrent/CheckedFuture.html"><code>CheckedFuture</code></a>, <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/util/concurrent/ListenableFuture.html"><code>ListenableFuture</code></a>, <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/util/concurrent/Service.html"><code>Service</code></a>, <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/util/concurrent/MoreExecutors.html"><code>MoreExecutors</code></a>, <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/util/concurrent/ThreadFactoryBuilder.html"><code>ThreadFactoryBuilder</code></a>, <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/util/concurrent/TimeLimiter.html"><code>TimeLimiter</code></a>, &hellip;</p>
+      <p>Also see <a href="https://code.google.com/p/guava-libraries/wiki/ListenableFutureExplained">Guava's listenable future API, explained</a>.</p>
+      <p>Also see <a href="https://code.google.com/p/guava-libraries/wiki/ServiceExplained">The Guava Service abstraction, explained</a>.</p>
+    </article>
+  </slide>
+
+  <slide class="segue dark nobackground">
+    <aside class="gdbar"><img src="images/smarchive_icon_128.png"></aside>
+    <hgroup class="auto-fadein">
+      <h2>Math</h2>
+    </hgroup>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Math</h2>
+    </hgroup>
+    <article>
+      <p>Convenience classes to perform some common mathematical calculations</p>
+      <p>Available classes: <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/math/IntMath.html"><code>IntMath</code></a>, <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/math/LongMath.html"><code>LongMath</code></a>, <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/math/DoubleMath.html"><code>DoubleMath</code></a>, and <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/math/BigIntegerMath.html"><code>BigIntegerMath</code></a></p>
+      <p>The utility classes support overflow-aware arithmethics, so that no silent overflows occur.</p>
+      <p>Also see <a href="http://code.google.com/p/guava-libraries/wiki/MathExplained">Guava's math utilities, explained</a>.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Math</h2>
+      <h3>Examples</h3>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="java">
+// Checked arithmetic operations
+int bigNumber = IntMath.checkedAdd(Integer.MAX_VALUE, 1); // throws ArithmeticException
+
+// Defining RoundingMode for arithmetic operations
+IntMath.divide(10, 4, RoundingMode.HALF_UP); // -&gt; 3
+IntMath.divide(10, 4, RoundingMode.HALF_DOWN); // -&gt; 2
+IntMath.divide(10, 4, RoundingMode.UNNECESSARY); // throws ArithmeticException
+
+// Common numerical operations
+IntMath.gcd(20, 15); // -&gt; 5
+IntMath.factorial(4); // -&gt; 24
+IntMath.log10(100, RoundingMode.UNNECESSARY); // -&gt; 2
+</pre>
+    </article>
+  </slide>
+
+  <slide class="segue dark nobackground">
+    <aside class="gdbar"><img src="images/smarchive_icon_128.png"></aside>
+    <hgroup class="auto-fadein">
+      <h2>I/O</h2>
+    </hgroup>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>I/O</h2>
+    </hgroup>
+    <article>
+      <p>If what you need pertains to streams, buffers, files and the like, look to the package <a href="">com.google.common.io</a>. In parts similar to <a href="">Apache Commons I/O</a>.</p>
+      <p>Key interfaces:
+        <pre class="prettyprint" data-lang="java">
+public interface InputSupplier&lt;T&gt; {
+  T getInput() throws IOException;
+}
+
+public interface OutputSupplier&lt;T&gt; {
+  T getOutput() throws IOException;
+}
+</pre>
+      <p>Typically: <code>InputSupplier&lt;InputStream&gt;</code>, <code>OutputSupplier&lt;Writer&gt;</code>, etc. This lets all the utility classes be useful for many kinds of I/O.</p>
+      <p>Also see <a href="http://code.google.com/p/guava-libraries/wiki/IOExplained">Guava's I/O package utilities, explained</a>.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>I/O</h2>
+      <h3>Streams</h3>
+    </hgroup>
+    <article>
+      <p>Terminology:</p>
+      <ul>
+        <li><code>byte</code> stream means "<code>InputStream</code> or <code>OutputStream</code>".</li>
+        <li><code>char</code> stream means "<code>Reader</code> or </code>Writer</code>".</li>
+      </ul>
+      <p>Utilities for these things are in the classes ByteStreams and CharStreams (which have largely parallel structure).</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>I/O</h2>
+      <h3>ByteStreams</h3>
+    </hgroup>
+    <article>
+<ul>
+<li><code>byte[] toByteArray(InputStream)</code>, <code>byte[] toByteArray(InputSupplier)</code></li>
+<li><code>void readFully(InputStream, byte[])</code></li>
+<li><code>void write(byte[], OutputSupplier)</code></li>
+<li><code>long copy(InputStream, OutputStream)</code>, <code>long copy(InputSupplier, OutputSupplier)</code></li>
+<li><code>long length(InputSupplier)</code></li>
+<li><code>boolean equal(InputSupplier, InputSupplier)</code></li>
+<li><code>InputSupplier slice(InputSupplier, long, long)</code></li>
+<li><code>InputSupplier join(InputSupplier...)</code></li>
+</ul>
+
+      <p><code>CharStreams</code> is similar, but deals in <code>Reader</code>, <code>Writer</code>, <code>String</code>, and <code>CharSequence</code> (often requiring you to specify a <code>Charset</code>).
+      <p>See the documentation on <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/io/ByteStreams.html">com.google.common.io.ByteStreams</a> and <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/io/CharStreams.html">com.google.common.io.CharStreams</a>.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>I/O</h2>
+      <h3>Files</h3>
+    </hgroup>
+    <article>
+      <p>The <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/io/Files.html"><code>Files</code></a> class works one level higher than <code>ByteStreams</code> and <code>CharStreams</code>, and has a few other tricks.</p>
+      <p>In parts superseeded by the <a href="http://docs.oracle.com/javase/tutorial/essential/io/fileio.html">NIO.2</a> classes in JDK 7 or higher.</p>
+      <ul>
+        <li><code>byte[] toByteArray(File)</code>, <code>String toString(File, Charset)</code></li>
+        <li><code>void write(byte[], File)</code>, <code>void write(CharSequence, File, Charset)</code></li>
+        <li><code>long copy(File, File)</code>, <code>long copy(InputSupplier, File)</code>, <code>long copy(File, OutputSupplier)</code></li>
+        <li><code>boolean equal(File, File)</code></li>
+        <li><code>HashCode hash(File, HashFunction)</code></li>
+        <li><code>List&lt;String&gt; readLines(File, Charset)</code></li>
+      </ul>
+      <p>See documentation on <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/io/Files.html">com.google.common.io.Files</a>.</p>
+    </article>
+  </slide>
+
+  <slide class="segue dark nobackground">
+    <aside class="gdbar"><img src="images/smarchive_icon_128.png"></aside>
+    <hgroup class="auto-fadein">
+      <h2>Hash</h2>
+    </hgroup>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Hash</h2>
+      <h3>Why a new hashing API?</h3>
+    </hgroup>
+    <article>
+      <p>Think of <code>Object.hashCode()</code> as "good enough for in-memory hash maps." But:</p>
+      <ul>
+        <li>Strictly limited to 32 bits (size of <code>int</code>)</li>
+        <li>Worse, composed hash codes are "collared" down to 32 bits during the computation</li>
+        <li>No separation between "which data to hash" and "which algorithm to hash it with"</li>
+        <li>Implementations have very bad bit dispersion</li>
+      </ul>
+      <p>These make it not very useful for a multitude of hashing applications: a document "fingerprint", cryptographic hashing, cuckoo hashing, Bloom filters&hellip;</p>
+      <p>Also see <a href="http://code.google.com/p/guava-libraries/wiki/HashingExplained">Guava hashing utilities, explained</a>.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Hash</h2>
+      <h3>JDK solution</h3>
+    </hgroup>
+    <article>
+      <p>To address this shortcoming, the JDK introduced <strike>an interface</strike> two interfaces:
+      <ul>
+        <li><a href="http://docs.oracle.com/javase/7/docs/api/java/security/MessageDigest.html"><code>java.security.MessageDigest</code></a></li>
+        <li><a href="http://docs.oracle.com/javase/7/docs/api/java/util/zip/Checksum.html"><code>java.util.zip.Checksum</code></a></li>
+      </ul>
+      <p>Each named after a specific use case for hashing.</p>
+      <p>Worse than the split: neither is remotely easy to use when you aren't hashing raw byte arrays.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Hash</h2>
+      <h3>Example</h3>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="java">
+HashCode hash = Hashing.murmur3_128().newHasher()
+  .putInt(person.getAge())
+  .putLong(person.getId())
+  .putString(person.getFirstName())
+  .putString(person.getLastName())
+  .putBytes(person.getSomeBytes())
+  .putObject(person.getPet(), petFunnel)
+  .hash();
+</pre>
+      <p><code>HashCode</code> has <code>asLong()</code>, <code>asBytes()</code>, <code>toString()</code>&hellip;</p>
+      <p>Or put it into a <code>Set</code>, return it from an API, etc.(It also implements <code>equals()</code> in a special way.)</p>
+      <p>See the documentation on <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/hash/HashCode.html">com.google.common.hash.HashCode</a> and <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/hash/Hashing.html">com.google.common.hash.Hashing</a>.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Hash</h2>
+      <h3>Overview</h3>
+    </hgroup>
+    <article>
+      <p>The com.google.common.hash API offers:</p>
+      <ul>
+        <li>A unified user-friendly API for all hash functions</li>
+        <li>Seedable 32- and 128-bit implementations of murmur3</li>
+        <li><code>md5()</code>, <code>sha1()</code>, <code>sha256()</code>, <code>sha512()</code> adapters, change only one line of code to switch between these and murmur etc.</li>
+        <li><code>goodFastHash(int bits)</code>, for when you don't care what algorithm you use</li>
+        <li>General utilities for <code>HashCode</code> instances, like <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/hash/Hashing.html#combineOrdered(java.lang.Iterable)"><code>combineOrdered</code></a> / <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/hash/Hashing.html#combineUnordered(java.lang.Iterable)"><code>combineUnordered</code></a></li>
+      <ul>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Hash</h2>
+      <h3>BloomFilter</h3>
+    </hgroup>
+    <article>
+      <p>A probabilistic set.</p>
+      <ul>
+        <li><code>public boolean mightContain(T);</code>
+          <ul>
+            <li>true == "probably there"</li>
+            <li>false == "definitely not there"</li>
+          </ul>
+        </li>
+      </ul>
+      <p>WHY? Consider a spell-checker:</p>
+      <ul>
+        <li>If "syzygy" gets red-underlined, that's annoying. But if "yarrzcw" doesn't get red-underlined... oh well!</li>
+        <li>And the memory savings can be very large</li>
+      </ul>
+      <p>Primary use: short-circuiting an expensive boolean query</p>
+      <p>See the documentation on <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/hash/BloomFilter.html">com.google.common.hash.BloomFilter</a></p>
+    </article>
+  </slide>
+
+  <slide class="segue dark nobackground">
+    <aside class="gdbar"><img src="images/smarchive_icon_128.png"></aside>
+    <hgroup class="auto-fadein">
+      <h2>Networking</h2>
+    </hgroup>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Net</h2>
+    </hgroup>
+    <article>
+      <p>Classes in <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/net/package-summary.html">com.google.common.net</a>
+        <ul>
+          <li>work with literals of: URI, URL, IP(v4/v6)</li>
+          <li>never cause DNS services to be accessed (<a href="http://www.eishay.com/2008/04/javas-url-little-secret.html">JDK does&hellip;</a>)</li>
+        </ul>
+      </p>
+      <p>Examples:
+        <ul>
+          <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/net/HostSpecifier.html">HostSpecifier</a>: syntactically valid host specifier, suitable for use in a URI</li>
+          <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/net/InternetDomainName.html">InternetDomainName</a>: RFC 1035, i18n domain names</li>
+          <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/net/InetAddresses.html">InetAddresses</a>: utility class pertaining to <code>Inet(4|6)Address</code> instances</li>
+          <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/net/HttpHeaders.html">HttpHeaders</a>: constant definitions for the HTTP header field names</li>
+          <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/net/MediaType.html">MediaType</a>: an <a href="http://en.wikipedia.org/wiki/Internet_media_type">Internet Media Type</a> (also known as a MIME Type or Content Type)</li>
+        </ul>
+      </p>
+    </article>
+  </slide>
+
+  <slide class="segue dark nobackground">
+    <aside class="gdbar"><img src="images/smarchive_icon_128.png"></aside>
+    <hgroup class="auto-fadein">
+      <h2>EventBus</h2>
+    </hgroup>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>EventBus</h2>
+      <h3>Overview</h3>
+    </hgroup>
+    <article>
+      <p>Classes from the eventbus package can be used as a simple tool to implement an in-memory publish-subscrib use case</p>
+      <p>Besides standard features these classes have some extras:</p>
+      <ul>
+        <li>checking if someone is listening for an event of given type</li>
+        <li>events hierarchy</li>
+      </ul>
+      <p>There are two variants for the event bus:</p>
+      <ul>
+        <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/eventbus/EventBus.html"><code>EventBus</code></a> (synchronous)</li>
+        <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/eventbus/AsyncEventBus.html"><code>AsyncEventBus</code></a> (asynchronous)</li>
+      </ul>
+      <p>See the documentation on <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/eventbus/package-summary.html">com.google.common.eventbus</a></p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>EventBus</h2>
+      <h3>Example: Listener</h3>
+    </hgroup>
+    <article>
+      <p>Listener class needs only one additional element, a method annotated with <code>@Subscribe</code>.</p>
+      <p>Argument of this method defines what type of event this class is listening for.</p>
+      <p> There are no restrictions to be an event class. It could also just be a <code>String</code> or <code>Integer</code>.</p>
+      <p>One listener can subscribe (listen for) more than one type of event.</p>
+      <pre class="prettyprint" data-lang="java">
+public class MyListener {
+  @Subscribe
+  public listen(Integer event) {
+    // ...
+  }
+}
+</pre>
+      <p>See the documentation on <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/eventbus/Subscribe.html">com.google.common.eventbus.Subscribe</a></p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>EventBus</h2>
+      <h3>Example: EventBus</h3>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="java">
+EventBus eventBus = new EventBus("example");
+MyListener listener = new MyListener();
+
+eventBus.register(listener);
+
+eventBus.post(42);
+// EventBus synchronously calls listener.listen(42)
+</pre>
+      <p>See also <a href="http://code.google.com/p/guava-libraries/wiki/EventBusExplained">Guava's event bus utility, explained</a>.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>EventBus</h2>
+      <h3>DeadEvent</h3>
+    </hgroup>
+    <article>
+      <p>To handle events without any listener we can use the pre-defined <code>DeadEvent</code>.</p>
+      <p>A <code>DeadEvent</code> is posted when the <code>EventBus</code> receives an event without any listeners to it.</li>
+      <p>In such situation we can, for example, log a warning message to a log file.</p>
+      <p>See the documentation on <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/eventbus/DeadEvent.html">com.google.common.eventbus.DeadEvent</a></p>
+    </article>
+  </slide>
+
+  <slide class="segue dark nobackground">
+    <aside class="gdbar"><img src="images/smarchive_icon_128.png"></aside>
+    <hgroup class="auto-fadein">
+      <h2>Reflection</h2>
+    </hgroup>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Reflection</h2>
+    </hgroup>
+    <article>
+      <p>Here be dragons!</p>
+      <p>Utility classes to work with Java reflection.</p>
+      <p>Please don't use reflection if you're not writing a library. It will lead to breakage at runtime.</p>
+      <p>Also see <a href="https://code.google.com/p/guava-libraries/wiki/ReflectionExplained"> Guava's new reflection utilities, explained</a>.</p>
+    </article>
+  </slide>
+
+  <slide class="segue dark nobackground">
+    <aside class="gdbar"><img src="images/smarchive_icon_128.png"></aside>
+    <hgroup class="auto-fadein">
+      <h2>Cache</h2>
+    </hgroup>
+  </slide>
+
+   <slide>
+    <hgroup>
+      <h2>Cache</h2>
+      <h3>Simple Loading Cache Example</h3>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="java">
+CacheLoader<String, String> loader = new CacheLoader<String, String>() {
+  public String load(String key) { return key.toUpperCase(); }
+};
+
+LoadingCache<String, String> cache = CacheBuilder.newBuilder().build(loader);
+
+cache.size(); // -&gt; 0
+cache.getUnchecked("simple test");
+// cache miss, invokes CacheLoader; -&gt; "SIMPLE TEST"
+
+cache.size(); // -&gt; 1
+cache.getUnchecked("simple test");
+// cache hit; -&gt; "SIMPLE TEST"
+</pre>
+      <p>See the documentation on <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/cache/CacheLoader.html">com.google.common.cache.CacheLoader</a>.</p>
+    </article>
+  </slide>
+
+   <slide>
+    <hgroup>
+      <h2>Cache</h2>
+      <h3>CacheBuilder</h3>
+    </hgroup>
+    <article>
+      <p>Guava provides a powerful on-heap cache (key -&gt; value)</p>
+      <pre class="prettyprint" data-lang="java">
+LoadingCache&lt;Key, Graph&gt; cache = CacheBuilder.newBuilder()
+  .maximumSize(10000)
+  .expireAfterWrite(10, TimeUnit.MINUTES)
+  .removalListener(MY_LISTENER)
+  .build(
+    new CacheLoader&lt;Key, Graph&gt;() {
+      public Graph load(Key key) throws AnyException {
+        return createExpensiveGraph(key);
+      }
+  });
+</pre>
+      <p>See the documentation on <a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/cache/CacheBuilder.html">com.google.common.cache.CacheBuilder</a>.</p>
+    </article>
+  </slide>
+
+   <slide>
+    <hgroup>
+      <h2>Cache</h2>
+    </hgroup>
+    <article>
+      <p>Things left out in this talk:</p>
+      <ul>
+        <li>Cache eviction (based on weight, size, age, &hellip;)</li>
+        <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/cache/CacheStats.html"><code>CacheStats</code></a></li>
+        <li><a href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/cache/RemovalListener.html"><code>RemovalListener</code></a></li>
+        <li>Automatic refresh</li>
+        <li>Bulk operations</li>
+      </ul>
+      <p>Also see <a href="http://code.google.com/p/guava-libraries/wiki/CachesExplained">Explanation for how to use Guava caches</a>.</p>
+    </article>
+  </slide>
+
+  <slide class="segue dark nobackground">
+    <aside class="gdbar"><img src="images/smarchive_icon_128.png"></aside>
+    <hgroup class="auto-fadein">
+      <h2>Wrap up</h2>
+    </hgroup>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>When to use Google Guava?</h2>
+    </hgroup>
+    <article>
+      <p>"I could just write that myself." But&hellip;</p>
+      <ul>
+        <li>These things are much easier to mess up than it seems</li>
+        <li>By using a standard library, you take advantage of the knowledge of the experts who wrote it and the experience of those who used it before you.</li>
+        <li>With a library, other people will make your code faster for you</li>
+        <li>Staggering numbers of unit tests. &gt;110.000 as of January 2012 (generated)</li>
+        <li>When you use a popular library, your code is in the mainstream</li>
+        <li>When you find an improvement to your private library, how many people did you help?</li>
+      </ul>
+      <p>Well argued in <a href="http://books.google.de/books?id=Ft8t0S4VjmwC&lpg=PA215&pg=PA215">Effective Java (Second Edition), Item 47</a>.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Why use Google Guava and not something else?</h2>
+    </hgroup>
+    <article>
+      <p>Should you use Guava or Apache Commons?</p>
+      <p>Good question and answers on Stack Overflow: <a href="http://tinyurl.com/guava-vs-apache">tinyurl.com/guava-vs-apache</a></p>
+      <p>In short: Use both where appropriate and mix them if necessary.</p>
+      <p><a href="http://commons.apache.org/">Apache Commons</a> libraries also work on older JVMs (let's hope you don't use one), Google Guava needs Java 6 or higher.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Further reading</h2>
+    </hgroup>
+    <article>
+      <ul>
+        <li><a href="https://code.google.com/p/guava-libraries/">Guava on Google Code</a></li>
+        <li><a href="https://code.google.com/p/guava-libraries/downloads/detail?name=AnOverviewofGuavaSVJUGSept2012.pdf">Silicon Valley Java Users Group Sept 2012 presentation slides</a></li>
+        <li><a href="https://code.google.com/p/guava-libraries/downloads/detail?name=guava-concurrent-slides.pdf">Guava util.concurrent presentation</a></li>
+        <li><a href="https://code.google.com/p/guava-libraries/downloads/detail?name=JavaCachingwithGuava.pdf">Caching presentation from Devoxx France 2012 </a></li>
+        <li><a href="http://www.slideshare.net/mikaelbarbero/google-guava-emf-gtug-nantes">Google Guava &amp; EMF @ GTUG Nantes</a></li>
+      </ul>
+    </article>
+  </slide>
+
+  <slide class="thank-you-slide segue nobackground">
+    <aside class="gdbar right"><img src="images/smarchive_icon_128.png"></aside>
+    <article class="flexbox vleft auto-fadein">
+      <h2>&lt;Thank You!&gt;</h2>
+    </article>
+    <p class="auto-fadein" data-config-contact>
+      <!-- populated from slide_config.json -->
+    </p>
+  </slide>
+
+  <slide class="logoslide dark nobackground">
+    <article class="flexbox vcenter">
+      <span><img src="images/smarchive_logo_white.png"></span>
+    </article>
+  </slide>
+
+  <slide class="backdrop"></slide>
+</slides>
+</body>
+</html>
